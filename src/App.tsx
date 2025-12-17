@@ -1,10 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import Forms, { type FormType } from './components/Forms'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [graph, setGraph] = useState<Record<string, unknown> | null>(null);
+  useEffect(() => {
+    console.log('App component mounted')
+    fetch('http://localhost:3000/api/v1/1/actions/blueprints/bp_01jk766tckfwx84xjcxazggzyc/graph')
+      .then((response) => response.json())
+      .then((json) => setGraph(json))
+      .catch((error) => console.error('Error fetching data:', error))
+  }, [])
 
   return (
     <>
@@ -16,18 +24,10 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>Avantos App</h1>
+      {(graph?.nodes as  FormType[] | undefined)?.map((form) => (
+        <Forms form={form} />
+      ))}
     </>
   )
 }
